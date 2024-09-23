@@ -1,0 +1,150 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.class_container{
+  display: flex;
+  gap: 2rem;
+}
+
+label{
+  font-size: 1.25rem;
+}
+
+div >input{
+  border: 3px solid #71c0cf;
+}
+
+.generate_button{
+  padding: 0.4rem 1rem;
+  color: white;
+  border-radius: 0.5rem;
+  background-color: #71c0cf;
+  border: 1px;
+}
+
+
+
+.hidden{
+  display: none;
+}
+
+
+
+.control-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+}
+
+.control-floor-input,
+.control-lift-input {
+  margin: 5px;
+}
+
+.control-floor-input input,
+.control-lift-input input {
+  background-color: transparent;
+  border: 0.25rem solid;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+
+
+
+.lift-container {
+  background-color: #ffffff;
+  position: relative;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.control-btn {
+  font-size: 24px;
+  color: #000;
+  margin: 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: transform 100ms;
+}
+
+.control-btn-up {
+  background-color: #26e443;
+}
+
+.control-btn-down {
+  background-color: #f0a500;
+}
+
+.floor {
+  height: 20%;
+  position: relative;
+}
+
+.floor-number {
+  color: #000009;
+  padding: 1rem 1.25rem;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  font-weight: 700;
+  position: absolute;
+  right: 1.25rem;
+  top: 25%;
+}
+
+.hr-divider {
+  background-color: black;
+  height: 1px;
+  margin: 0;
+}
+
+.lift {
+  display: block;
+  height: 100%;
+  width: 100px;
+  position: absolute;
+  left: 15%;
+  bottom: 1%;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.lift-door {
+  background-color: #4fc1eb;
+  width: 50%;
+  height: 90%;
+  position: relative;
+  top: 5%;
+  z-index: 2;
+}
+
+.lift-door-left {
+  float: left;
+}
+
+.lift-door-right {
+  float: right;
+}
+
+@media (max-width: 768px) {
+  .header-title {
+    font-size: 32px;
+  }
+
+  .floor-number {
+    right: 1rem;
+  }
+
+  .control-btn {
+    font-size: 2rem;
+  }
+}
