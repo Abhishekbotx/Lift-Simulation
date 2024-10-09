@@ -148,3 +148,22 @@ div >input{
     font-size: 2rem;
   }
 }
+
+
+.lift_top{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.back_btn{
+  font-size: 1.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #ea9f12;
+  color: white;
+  cursor: pointer;
+}
+
+.hidden{
+  display: none;
+}

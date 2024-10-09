@@ -3,10 +3,12 @@ let liftQueue = [];
 let floorsInput = document.getElementById("input-floors");
 let liftsInput = document.getElementById("input-lifts");
 let classConatiner = document.querySelector('.class_container');
+
 let numberOfFloors;
 let numberOfLifts;
 let liftIntervalId;
-let tempLiftInterval;
+
+let floorLiftStops = {}; 
 
 let formElement = document.getElementById("form");
 formElement.addEventListener("click", function (e) {
@@ -41,7 +43,7 @@ function createLifts(numLifts) {
     lifts.push(liftObject);
   }
 
-  classConatiner.classList.add("hidden")
+  classConatiner.classList.add("hidden");
 }
 
 function createFloor(floorNumber) {
@@ -79,6 +81,54 @@ function createFloor(floorNumber) {
   container.insertBefore(floorDiv, container.childNodes[0]);
 }
 
+function initializeFloors() {
+  let container = document.getElementById("container");
+  container.innerHTML = "";
+  numberOfFloors = floorsInput.value;
+
+  floorLiftStops = {};
+  for (let i = 1; i <= numberOfFloors; i++) {
+    createFloor(i);
+    floorLiftStops[i] = 0; 
+  }
+}
+
+function moveLift(lift, destinationFloor) {
+  
+  if (floorLiftStops[destinationFloor] >= 2) {
+    console.log(`Skipping: More than 2 lifts are stopping at floor ${destinationFloor}`);
+    return;
+  }
+
+  
+  let distance = -1 * (destinationFloor - 1) * 100;
+  let liftNo = lift.id;
+  let startFloor = lift.currentFloor;
+  lift.currentFloor = destinationFloor;
+  lift.moving = true;
+  let liftElement = lift.element;
+  liftElement.addEventListener("webkitTransitionEnd", animateLiftDoors);
+  liftElement.style.transform = `translateY(${distance}%)`;
+
+  
+  floorLiftStops[destinationFloor]++;
+  console.log(`Lift ${liftNo} assigned to floor ${destinationFloor}. Lifts stopping here: ${floorLiftStops[destinationFloor]}`);
+
+  
+  let travelTime = 2.5 * Math.abs(startFloor - destinationFloor);
+  if (travelTime === 0) {
+    let e = {};
+    e.target = {};
+    e.target.id = `lift${liftNo}`;
+    animateLiftDoors(e);
+  }
+  liftElement.style.transitionDuration = `${travelTime}s`;
+
+  console.log(
+    `Lift Number: ${liftNo} \n Floor: \n From: ${startFloor} To: ${destinationFloor} \n Time: ${travelTime} sec`
+  );
+}
+
 function closeLiftDoors(e) {
   let targetId = e.target.id;
   let liftNo = targetId[targetId.length - 1];
@@ -89,6 +139,16 @@ function closeLiftDoors(e) {
   rightDoor.style.transform = `translateX(0)`;
   leftDoor.style.transition = `transform 1s ease-out`;
   rightDoor.style.transition = `transform 1.5s ease-out`;
+
+ 
+  for (let lift of lifts) {
+    if (lift.id == liftNo) {
+      let floor = lift.currentFloor;
+      floorLiftStops[floor]--;
+      console.log(`Lift ${liftNo} left floor ${floor}. Lifts stopping here: ${floorLiftStops[floor]}`);
+    }
+  }
+
   setTimeout(() => {
     stopLift(liftNo);
   }, 2500);
@@ -131,26 +191,15 @@ function scheduledLift(floor) {
   return selectedLift;
 }
 
-function moveLift(lift, destinationFloor) {
-  let distance = -1 * (destinationFloor - 1) * 100;
-  let liftNo = lift.id;
-  let startFloor = lift.currentFloor;
-  lift.currentFloor = destinationFloor;
-  lift.moving = true;
-  let liftElement = lift.element;
-  liftElement.addEventListener("webkitTransitionEnd", animateLiftDoors);
-  liftElement.style.transform = `translateY(${distance}%)`;
-  let travelTime = 2 * Math.abs(startFloor - destinationFloor);
-  if (travelTime === 0) {
-    let e = {};
-    e.target = {};
-    e.target.id = `lift${liftNo}`;
-    animateLiftDoors(e);
+function checkLiftQueue() {
+  if (liftQueue.length === 0) return;
+  let floor = liftQueue.shift();
+  let selectedLift = scheduledLift(floor);
+  if (!selectedLift) {
+    liftQueue.unshift(floor);
+    return;
   }
-  liftElement.style.transitionDuration = `${travelTime}s`;
-  console.log(
-    `Lift Number: ${liftNo} \n Floor: \n From: ${startFloor} To: ${destinationFloor} \n Time: ${travelTime} sec`
-  );
+  moveLift(selectedLift, floor);
 }
 
 function saveButtonClick(e) {
@@ -185,46 +234,36 @@ function initializeLifts() {
   }
 }
 
-function initializeFloors() {
-  let container = document.getElementById("container");
-  container.innerHTML = "";
-  numberOfFloors = floorsInput.value;
-
-  for (let i = 1; i <= numberOfFloors; i++) {
-    createFloor(i);
-  }
-}
-
 function placeLifts() {
   let firstFloor = document.getElementById("floor1");
-  for (let i = lifts.length - 1; i >= 0; i--) {
-    firstFloor.insertBefore(
-      lifts[i].element,
-      firstFloor.childNodes[firstFloor.childNodes.length - 1]
-    );
+  for (let lift of lifts) {
+    firstFloor.appendChild(lift.element);
   }
 }
 
-function checkLiftQueue() {
-  if (liftQueue.length === 0) return;
-  let floor = liftQueue.shift();
-  let selectedLift = scheduledLift(floor);
-  if (!selectedLift) {
-    liftQueue.unshift(floor);
-    return;
-  }
-  moveLift(selectedLift, floor);
+
+let back=document.createElement('p')
+
+const liftTop=document.querySelector('.lift_top')
+function AddBack(){
+back.className='back_btn'
+back.innerText='Back'
+liftTop.appendChild(back)
+
 }
+
 
 function startLiftSystem() {
-  clearInterval(liftIntervalId);
-  liftQueue = [];
-  lifts = [];
   initializeFloors();
   initializeLifts();
   placeLifts();
   assignButtonClickEvents();
+  // AddBack()
   liftIntervalId = setInterval(checkLiftQueue, 100);
+}
+
+function BackFunction(){
+  
 }
 
 let startButton = document.getElementById("input-btn");
